@@ -13,7 +13,9 @@ def create_app():
 
     from app.routes import main
     app.register_blueprint(main)
-
+    with app.app_context():
+    from app import models  # Esto asegura que SQLAlchemy reconozca los modelos
+    db.create_all()
     return app
 
 
