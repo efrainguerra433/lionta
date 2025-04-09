@@ -1,5 +1,20 @@
 from app import db
 from datetime import date
+from werkzeug.security import generate_password_hash, check_password_hash
+
+class Usuario(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    nombre = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    contraseña_hash = db.Column(db.String(255), nullable=False)
+    rol = db.Column(db.String(20), default="jugador")  # "jugador" o "admin"
+
+    def set_password(self, password):
+        self.contraseña_hash = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.contraseña_hash, password)
+
 
 class Jugador(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -32,3 +47,4 @@ class Estadistica(db.Model):
     asistencias = db.Column(db.Integer, default=0)
     atajadas = db.Column(db.Integer, default=0)  # solo si es portero
     partidos_jugados = db.Column(db.Integer, default=0)
+
