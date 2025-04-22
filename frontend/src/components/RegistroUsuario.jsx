@@ -1,100 +1,95 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const RegistroUsuario = () => {
-  const [formData, setFormData] = useState({
-    nombre: "",
-    email: "",
-    contraseña: "",
-    rol: "jugador"  // Valor por defecto
-  });
+  const [nombre, setNombre] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [rol, setRol] = useState("jugador");
+  const [mensaje, setMensaje] = useState("");
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-  };
+  const navigate = useNavigate(); // Hook para redirección
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     try {
-      const response = await fetch("http://localhost:5000/registrar_usuario", {
+      const response = await fetch("http://127.0.0.1:5000/registrar_usuario", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          nombre: nombre,
+          email: email,
+          contraseña: password,
+          rol: rol,
+        }),
       });
 
       const data = await response.json();
+
       if (response.ok) {
-        alert(data.mensaje);
+        setMensaje("Usuario registrado correctamente");
+        // Limpia el formulario
+        setNombre("");
+        setEmail("");
+        setPassword("");
+        setRol("jugador");
+
+        // Redirige al login después de 2 segundos
+        setTimeout(() => {
+          navigate("/login");
+        }, 2000);
       } else {
-        alert("Error: " + data.error);
+        setMensaje(data.error || "Error al registrar usuario");
       }
     } catch (error) {
-      console.error("Error:", error);
-      alert("Hubo un problema al registrar el usuario.");
+      setMensaje("Error de conexión con el servidor");
     }
   };
 
   return (
-    <div className="container mt-5">
-      <h2 className="text-center">Registro de Usuario</h2>
-      <form onSubmit={handleSubmit} className="p-4 border rounded shadow">
-        <div className="mb-3">
-          <label htmlFor="nombre" className="form-label">Nombre:</label>
+    <div>
+      <h2>Registro de Usuario</h2>
+      <form onSubmit={handleSubmit}>
+        <div>
+          <label>Nombre:</label>
           <input
             type="text"
-            id="nombre"
-            name="nombre"
-            value={formData.nombre}
-            onChange={handleChange}
-            className="form-control"
+            value={nombre}
+            onChange={(e) => setNombre(e.target.value)}
             required
           />
         </div>
-        <div className="mb-3">
-          <label htmlFor="email" className="form-label">Email:</label>
+        <div>
+          <label>Email:</label>
           <input
             type="email"
-            id="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            className="form-control"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             required
           />
         </div>
-        <div className="mb-3">
-          <label htmlFor="contraseña" className="form-label">Contraseña:</label>
+        <div>
+          <label>Contraseña:</label>
           <input
             type="password"
-            id="contraseña"
-            name="contraseña"
-            value={formData.contraseña}
-            onChange={handleChange}
-            className="form-control"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             required
           />
         </div>
-        <div className="mb-3">
-          <label htmlFor="rol" className="form-label">Rol:</label>
-          <select
-            id="rol"
-            name="rol"
-            value={formData.rol}
-            onChange={handleChange}
-            className="form-control"
-            required
-          >
+        <div>
+          <label>Rol:</label>
+          <select value={rol} onChange={(e) => setRol(e.target.value)}>
             <option value="jugador">Jugador</option>
-            <option value="admin">Administrador</option>
+            <option value="admin">Admin</option>
           </select>
         </div>
-        <button type="submit" className="btn btn-primary w-100">Registrar</button>
+        <button type="submit">Registrar</button>
       </form>
+      {mensaje && <p>{mensaje}</p>}
     </div>
   );
 };
