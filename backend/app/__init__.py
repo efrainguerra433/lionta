@@ -16,18 +16,29 @@ def create_app():
     migrate.init_app(app, db)
     CORS(app)
 
-    # Importa los modelos antes de crear las tablas
+    # Importa los modelos DESPUÉS de inicializar db
+    from app.models import Usuario
+
+    # Crea el admin si no existe
     with app.app_context():
-        from app import models
         db.create_all()
+        if not Usuario.query.filter_by(email="admin@lionta.com").first():
+            admin = Usuario(
+                nombre="Administrador General",
+                email="admin@lionta.com",
+                rol="admin"
+            )
+            admin.set_password("admin123")
+            db.session.add(admin)
+            db.session.commit()
 
     # Importa y registra los blueprints
-    from app.controllers.jugadores_route import jugador_bp
+    
     from app.controllers.metricas_route import metrica_bp
     from app.controllers.estadisticas_route import estadistica_bp
     from app.controllers.usuarios_route import usuario_bp
 
-    app.register_blueprint(jugador_bp)
+    
     app.register_blueprint(metrica_bp)
     app.register_blueprint(estadistica_bp)
     app.register_blueprint(usuario_bp)

@@ -1,25 +1,10 @@
 from flask import Blueprint, request, jsonify
 from app.models import Usuario
+from datetime import date
+
 from app import db
 
 usuario_bp = Blueprint("usuario", __name__)
-
-@usuario_bp.route("/registrar_usuario", methods=["POST"])
-def registrar_usuario():
-    data = request.json
-    if not all(k in data for k in ("nombre", "email", "contraseña", "rol")):
-        return jsonify({"error": "Faltan campos obligatorios"}), 400
-    if Usuario.query.filter_by(email=data["email"]).first():
-        return jsonify({"error": "El correo ya está registrado"}), 400
-    nuevo_usuario = Usuario(
-        nombre=data["nombre"],
-        email=data["email"],
-        rol=data["rol"]
-    )
-    nuevo_usuario.set_password(data["contraseña"])
-    db.session.add(nuevo_usuario)
-    db.session.commit()
-    return jsonify({"mensaje": "Usuario creado correctamente"}), 201
 
 @usuario_bp.route("/login", methods=["POST"])
 def login():
@@ -37,13 +22,67 @@ def login():
     else:
         return jsonify({"error": "Credenciales incorrectas"}), 401
 
-@usuario_bp.route("/usuarios", methods=["GET"])
-def obtener_usuarios():
-    usuarios = Usuario.query.all()
+@usuario_bp.route("/registrar_usuario", methods=["POST"])
+def registrar_usuario():
+    data = request.json
+
+    # Validar campos obligatorios
+    required_fields = ("nombre", "email", "contraseña", "rol", "documento", "categoria", "fecha_vencimiento_pago")
+    if not all(k in data for k in required_fields):
+        return jsonify({"error": "Faltan campos obligatorios"}), 400
+
+    # Verificar email único
+    if Usuario.query.filter_by(email=data["email"]).first():
+        return jsonify({"error": "El correo ya está registrado"}), 400
+
+    # Verificar documento único
+    if Usuario.query.filter_by(documento=data["documento"]).first():
+        return jsonify({"error": "El documento ya está registrado"}), 400
+
+    # Crear usuario
+    nuevo_usuario = Usuario(
+        nombre=data["nombre"],
+        email=data["email"],
+        rol=data["rol"]
+    )
+    nuevo_usuario.set_password(data["contraseña"])
+    db.session.add(nuevo_usuario)
+    db.session.commit()
+
+    # Crear jugador solo si el rol es "jugador"
+    if data["rol"] == "jugador":
+        nuevo_usuario.documento = data["documento"]
+        nuevo_usuario.categoria = data["categoria"]
+        nuevo_usuario.estado = True
+        nuevo_usuario.fecha_vencimiento_pago = date.fromisoformat(data["fecha_vencimiento_pago"])
+        db.session.commit()
+
+    return jsonify({"mensaje": "Usuario y jugador creados correctamente"}), 201
+
+@usuario_bp.route("/jugadores", methods=["GET"])
+def obtener_jugadores():
+    jugadores = Usuario.query.filter_by(rol="jugador").all()
     resultado = [{
-        "id": u.id,
-        "nombre": u.nombre,
-        "email": u.email,
-        "rol": u.rol
-    } for u in usuarios]
+        "id": j.id,
+        "nombre": j.nombre,
+        "documento": j.documento,
+        "categoria": j.categoria,
+        "estado": j.estado,
+        "fecha_vencimiento_pago": j.fecha_vencimiento_pago.strftime("%Y-%m-%d") if j.fecha_vencimiento_pago else None
+    } for j in jugadores]
     return jsonify(resultado)
+
+@usuario_bp.route("/jugador/<int:usuario_id>", methods=["GET"])
+def obtener_jugador(usuario_id):
+    jugador = Usuario.query.get(usuario_id)
+    if not jugador or jugador.rol != "jugador":
+        return jsonify({"error": "Jugador no encontrado"}), 404
+    return jsonify({
+        "id": jugador.id,
+        "nombre": jugador.nombre,
+        "documento": jugador.documento,
+        "categoria": jugador.categoria,
+        "estado": jugador.estado,
+        "fecha_vencimiento_pago": jugador.fecha_vencimiento_pago.strftime("%Y-%m-%d") if jugador.fecha_vencimiento_pago else None
+    }), 200
+    

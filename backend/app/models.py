@@ -9,6 +9,16 @@ class Usuario(db.Model):
     contraseña_hash = db.Column(db.String(255), nullable=False)
     rol = db.Column(db.String(20), default="jugador")  # "jugador" o "admin"
 
+    # Campos que antes estaban en Jugador
+    documento = db.Column(db.String(20), unique=True, nullable=True)
+    categoria = db.Column(db.Integer, nullable=True)
+    estado = db.Column(db.Boolean, default=True)
+    fecha_vencimiento_pago = db.Column(db.Date, nullable=True)
+
+    # Relaciones
+    metricas = db.relationship('Metrica', backref='usuario_metrica', lazy=True)
+    estadisticas = db.relationship('Estadistica', backref='usuario_estadistica', lazy=True)
+
     def set_password(self, password):
         self.contraseña_hash = generate_password_hash(password)
 
@@ -16,35 +26,22 @@ class Usuario(db.Model):
         return check_password_hash(self.contraseña_hash, password)
 
 
-class Jugador(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    nombre = db.Column(db.String(100), nullable=False)
-    documento = db.Column(db.String(20), unique=True, nullable=False)
-    categoria = db.Column(db.Integer, nullable=False)  # Año de nacimiento
-    estado = db.Column(db.Boolean, default=True)  # True = activo
-    fecha_vencimiento_pago = db.Column(db.Date, nullable=True)
-
-    # Relaciones
-    metricas = db.relationship('Metrica', backref='jugador', lazy=True)
-    estadisticas = db.relationship('Estadistica', backref='jugador', lazy=True)
-
-
 class Metrica(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    jugador_id = db.Column(db.Integer, db.ForeignKey('jugador.id'), nullable=False)
+    usuario_id = db.Column(db.Integer, db.ForeignKey('usuario.id'), nullable=False)
     posicion = db.Column(db.String(50), nullable=True)
     edad = db.Column(db.Integer, nullable=True)
-    altura = db.Column(db.Float, nullable=True)  # en metros
-    peso = db.Column(db.Float, nullable=True)    # en kg
-    velocidad = db.Column(db.Float, nullable=True)  # en m/s
-    aceleracion = db.Column(db.Float, nullable=True)  # en m/s^2
+    altura = db.Column(db.Float, nullable=True)
+    peso = db.Column(db.Float, nullable=True)
+    velocidad = db.Column(db.Float, nullable=True)
+    aceleracion = db.Column(db.Float, nullable=True)
 
 
 class Estadistica(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    jugador_id = db.Column(db.Integer, db.ForeignKey('jugador.id'), nullable=False)
+    usuario_id = db.Column(db.Integer, db.ForeignKey('usuario.id'), nullable=False)
     goles = db.Column(db.Integer, default=0)
     asistencias = db.Column(db.Integer, default=0)
-    atajadas = db.Column(db.Integer, default=0)  # solo si es portero
+    atajadas = db.Column(db.Integer, default=0)
     partidos_jugados = db.Column(db.Integer, default=0)
 

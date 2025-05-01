@@ -1,21 +1,21 @@
 from flask import Blueprint, request, jsonify
-from app.models import Metrica
+from app.models import Metrica, Usuario
 from app import db
 
 metrica_bp = Blueprint("metrica", __name__)
 
-@metrica_bp.route("/registrar_metrica", methods=["POST"])
-def registrar_metrica():
+@metrica_bp.route("/usuario/<int:usuario_id>/registrar_metrica", methods=["POST"])
+def registrar_metrica(usuario_id):
     data = request.json
 
-    # Verificar si el jugador existe
-    jugador = jugador.query.get(data["jugador_id"])
-    if not jugador:
-        return jsonify({"error": "Jugador no registrado"}), 404  # Si el jugador no existe, retorna un error 404
+    # Verificar si el usuario existe y es jugador
+    usuario = Usuario.query.get(usuario_id)
+    if not usuario or usuario.rol != "jugador":
+        return jsonify({"error": "Usuario no válido o no es un jugador"}), 404
 
     try:
         metrica = Metrica(
-            jugador_id=data["jugador_id"],
+            usuario_id=usuario_id,
             posicion=data.get("posicion"),
             edad=data.get("edad"),
             altura=data.get("altura"),
@@ -31,10 +31,9 @@ def registrar_metrica():
         db.session.rollback()
         return jsonify({"error": str(e)}), 400
 
-
-@metrica_bp.route("/jugador/<int:jugador_id>/metricas", methods=["GET"])
-def obtener_metricas(jugador_id):
-    metricas = Metrica.query.filter_by(jugador_id=jugador_id).all()
+@metrica_bp.route("/usuario/<int:usuario_id>/metricas", methods=["GET"])
+def obtener_metricas(usuario_id):
+    metricas = Metrica.query.filter_by(usuario_id=usuario_id).all()
     resultado = [{
         "id": m.id,
         "posicion": m.posicion,
@@ -46,13 +45,13 @@ def obtener_metricas(jugador_id):
     } for m in metricas]
     return jsonify(resultado)
 
-@metrica_bp.route("/jugador/<int:jugador_id>/metrica", methods=["PUT"])
-def actualizar_metrica(jugador_id):
+@metrica_bp.route("/usuario/<int:usuario_id>/metrica", methods=["PUT"])
+def actualizar_metrica(usuario_id):
     data = request.json
-    metrica = Metrica.query.filter_by(jugador_id=jugador_id).first()
+    metrica = Metrica.query.filter_by(usuario_id=usuario_id).first()
 
     if not metrica:
-        return jsonify({"error": "Métrica no encontrada para este jugador"}), 404
+        return jsonify({"error": "Métrica no encontrada para este usuario"}), 404
 
     metrica.posicion = data.get("posicion", metrica.posicion)
     metrica.edad = data.get("edad", metrica.edad)
