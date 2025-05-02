@@ -55,6 +55,10 @@ const ListaUsuarios = () => {
               <th>Nombre</th>
               <th>Email</th>
               <th>Rol</th>
+              <th>Documento</th>
+              <th>Categoría</th>
+              <th>Estado</th>
+              <th>Fecha de Vencimiento</th>
             </tr>
           </thead>
           <tbody>
@@ -64,8 +68,12 @@ const ListaUsuarios = () => {
                 <td>{usuario.nombre}</td>
                 <td>{usuario.email}</td>
                 <td>{usuario.rol}</td>
-              </tr>
-            ))}
+                <td>{usuario.documento || "N/A"}</td>
+                <td>{usuario.categoria || "N/A"}</td>
+                <td>{usuario.estado ? "Activo" : "Inactivo"}</td>
+                <td>{usuario.fecha_vencimiento_pago || "N/A"}</td>
+            </tr>
+          ))}
           </tbody>
         </table>
       )}

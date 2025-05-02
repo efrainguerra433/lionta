@@ -2,19 +2,20 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from flask_migrate import Migrate
-from config import SQLALCHEMY_DATABASE_URI, SQLALCHEMY_TRACK_MODIFICATIONS
+from config import SQLALCHEMY_DATABASE_URI, SQLALCHEMY_TRACK_MODIFICATIONS, SECRET_KEY
 
 db = SQLAlchemy()
 migrate = Migrate()
 
 def create_app():
+    
     app = Flask(__name__)
     app.config["SQLALCHEMY_DATABASE_URI"] = SQLALCHEMY_DATABASE_URI
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = SQLALCHEMY_TRACK_MODIFICATIONS
-
+    app.config["SECRET_KEY"] = SECRET_KEY
     db.init_app(app)
     migrate.init_app(app, db)
-    CORS(app)
+    CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}}, supports_credentials=True)
 
     # Importa los modelos DESPUÉS de inicializar db
     from app.models import Usuario

@@ -1,6 +1,7 @@
 from app import db
 from datetime import date
 from werkzeug.security import generate_password_hash, check_password_hash
+from itsdangerous import URLSafeTimedSerializer
 
 class Usuario(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -14,7 +15,9 @@ class Usuario(db.Model):
     categoria = db.Column(db.Integer, nullable=True)
     estado = db.Column(db.Boolean, default=True)
     fecha_vencimiento_pago = db.Column(db.Date, nullable=True)
-
+    #Verificacion
+    verificado = db.Column(db.Boolean, default=False)
+    token_verificacion = db.Column(db.String(255), nullable=True)
     # Relaciones
     metricas = db.relationship('Metrica', backref='usuario_metrica', lazy=True)
     estadisticas = db.relationship('Estadistica', backref='usuario_estadistica', lazy=True)
