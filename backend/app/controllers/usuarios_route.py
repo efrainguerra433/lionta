@@ -90,7 +90,7 @@ def obtener_jugador(usuario_id):
         "fecha_vencimiento_pago": jugador.fecha_vencimiento_pago.strftime("%Y-%m-%d") if jugador.fecha_vencimiento_pago else None
     }), 200
 
-@usuario_bp.route("/verificar/<token>", methods=["GET"])
+@usuario_bp.route("/verificar/<token>", methods=["POST"])
 def verificar_cuenta(token):
     s = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
     try:
@@ -98,11 +98,70 @@ def verificar_cuenta(token):
         usuario = Usuario.query.filter_by(email=email).first()
         if not usuario:
             return jsonify({"error": "Usuario no encontrado"}), 404
+
+        data = request.json
+        nueva_contraseña = data.get("nueva_contraseña")
+        if not nueva_contraseña:
+            return jsonify({"error": "Falta la nueva contraseña"}), 400
+
+        usuario.set_password(nueva_contraseña)
         usuario.verificado = True
         db.session.commit()
-        return jsonify({"mensaje": "Cuenta verificada correctamente"}), 200
+        return jsonify({"mensaje": "Cuenta verificada y contraseña actualizada"}), 200
     except Exception:
         return jsonify({"error": "Token inválido o expirado"}), 400
+
+
+
+@usuario_bp.route("/usuarios", methods=["GET", "OPTIONS"])
+def obtener_usuarios():
+    if request.method == "OPTIONS":
+        return '', 204
+
+    usuarios = Usuario.query.all()
+    resultado = [{
+        "id": u.id,
+        "nombre": u.nombre,
+        "email": u.email,
+        "rol": u.rol,
+        "documento": u.documento,
+        "categoria": u.categoria,
+        "estado": u.estado,
+        "fecha_vencimiento_pago": u.fecha_vencimiento_pago.strftime("%Y-%m-%d") if u.fecha_vencimiento_pago else None
+    } for u in usuarios]
+    return jsonify(resultado)
+
+@usuario_bp.route("/usuario/<int:usuario_id>", methods=["DELETE"])
+def eliminar_usuario(usuario_id):
+    usuario = Usuario.query.get(usuario_id)
+    if not usuario:
+        return jsonify({"error": "Usuario no encontrado"}), 404
+    db.session.delete(usuario)
+    db.session.commit()
+    return jsonify({"mensaje": "Usuario eliminado correctamente"}), 200
+
+# Actualizar usuario
+@usuario_bp.route("/usuario/<int:usuario_id>", methods=["PUT"])
+def actualizar_usuario(usuario_id):
+    data = request.json
+    usuario = Usuario.query.get(usuario_id)
+    if not usuario:
+        return jsonify({"error": "Usuario no encontrado"}), 404
+
+    usuario.nombre = data.get("nombre", usuario.nombre)
+    usuario.email = data.get("email", usuario.email)
+    usuario.rol = data.get("rol", usuario.rol)
+    usuario.documento = data.get("documento", usuario.documento)
+    usuario.categoria = data.get("categoria", usuario.categoria)
+    usuario.estado = data.get("estado", usuario.estado)
+
+    if data.get("fecha_vencimiento_pago"):
+        from datetime import date
+        usuario.fecha_vencimiento_pago = date.fromisoformat(data["fecha_vencimiento_pago"])
+
+    db.session.commit()
+    return jsonify({"mensaje": "Usuario actualizado correctamente"}), 200
+
 
 
 def generar_token_verificacion(email):
@@ -125,22 +184,3 @@ def enviar_correo_verificacion(destinatario, token):
         print("Correo enviado correctamente")
     except Exception as e:
         print("Error al enviar el correo:", e)
-
-
-@usuario_bp.route("/usuarios", methods=["GET", "OPTIONS"])
-def obtener_usuarios():
-    if request.method == "OPTIONS":
-        return '', 204
-
-    usuarios = Usuario.query.all()
-    resultado = [{
-        "id": u.id,
-        "nombre": u.nombre,
-        "email": u.email,
-        "rol": u.rol,
-        "documento": u.documento,
-        "categoria": u.categoria,
-        "estado": u.estado,
-        "fecha_vencimiento_pago": u.fecha_vencimiento_pago.strftime("%Y-%m-%d") if u.fecha_vencimiento_pago else None
-    } for u in usuarios]
-    return jsonify(resultado)

@@ -3,9 +3,11 @@ import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from "react
 import RegistroUsuario from "./components/RegistroUsuario";
 import Login from "./components/Login";
 import ListaUsuarios from "./components/ListaUsuarios";
+import VerificarCuenta from "./components/VerificarCuenta";
 import './App.css';
 import { AuthProvider, AuthContext } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
+import { useLocation } from "react-router-dom";
 
 function App() {
   return (
@@ -49,6 +51,7 @@ function AppContent() {
               </ProtectedRoute>
             }
           />
+          <Route path="/verificar/:token" element={<VerificarCuenta />} />
           <Route path="/login" element={<Login />} />
           <Route
             path="/usuarios"

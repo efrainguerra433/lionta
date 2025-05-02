@@ -3,6 +3,7 @@ import { AuthContext } from "../context/AuthContext"; // Importa el contexto
 
 const ListaUsuarios = () => {
   const { user } = useContext(AuthContext); // Obtén el usuario actual del contexto
+  
   const [usuarios, setUsuarios] = useState([]);
   const [error, setError] = useState("");
 
@@ -37,11 +38,39 @@ const ListaUsuarios = () => {
 
     fetchUsuarios();
   }, [user]);
-
+  const handleEliminar = async (id) => {
+    if (!window.confirm("¿Estás seguro de que deseas eliminar este usuario?")) return;
+  
+    const token = localStorage.getItem("token");
+    try {
+      const response = await fetch(`http://127.0.0.1:5000/usuario/${id}`, {
+        method: "DELETE",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+        },
+      });
+  
+      if (response.ok) {
+        setUsuarios(usuarios.filter(u => u.id !== id));
+      } else {
+        const errorData = await response.json();
+        setError(errorData.error || "Error al eliminar");
+      }
+    } catch {
+      setError("Error al conectar con el servidor");
+    }
+  };
+  
+  const handleEditar = (usuario) => {
+    // Puedes redirigir a otra ruta con navigate o abrir un modal para editar
+    alert(`Función de editar para: ${usuario.nombre} aún no implementada`);
+  };
+  
   if (error) {
     return <p style={{ color: "red" }}>{error}</p>; // Muestra el error si ocurre
   }
-
+  
+  
   return (
     <div>
       <h2>Lista de Usuarios</h2>
@@ -59,6 +88,7 @@ const ListaUsuarios = () => {
               <th>Categoría</th>
               <th>Estado</th>
               <th>Fecha de Vencimiento</th>
+              <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
@@ -72,6 +102,10 @@ const ListaUsuarios = () => {
                 <td>{usuario.categoria || "N/A"}</td>
                 <td>{usuario.estado ? "Activo" : "Inactivo"}</td>
                 <td>{usuario.fecha_vencimiento_pago || "N/A"}</td>
+                <td>
+                  <button onClick={() => handleEditar(usuario)}>Editar</button>
+                  <button onClick={() => handleEliminar(usuario.id)}>Eliminar</button>
+                </td>
             </tr>
           ))}
           </tbody>
