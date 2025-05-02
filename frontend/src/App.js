@@ -7,7 +7,8 @@ import VerificarCuenta from "./components/VerificarCuenta";
 import './App.css';
 import { AuthProvider, AuthContext } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
-import { useLocation } from "react-router-dom";
+import MetricasUsuario from "./components/MetricasUsuario";
+import ListaMetricas from "./components/ListaMetricas";
 
 function App() {
   return (
@@ -38,7 +39,10 @@ function AppContent() {
 
           {/* Botón extra solo visible para admin */}
           {user?.rol === "admin" && (
-            <button onClick={() => navigate("/registro")}>Crear usuario</button>
+            <>
+              <button onClick={() => navigate("/registro")}>Crear usuario</button>
+              <button onClick={() => navigate("/metricas")}>Ver Métricas</button>
+            </>
           )}
         </nav>
 
@@ -58,6 +62,15 @@ function AppContent() {
             element={
               <ProtectedRoute role="admin">
                 <ListaUsuarios />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="/usuario/:id/metricas" element={<MetricasUsuario usuarioId={1} />} />
+          <Route
+            path="/metricas"
+            element={
+              <ProtectedRoute role="admin">
+                <ListaMetricas />
               </ProtectedRoute>
             }
           />

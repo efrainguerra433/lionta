@@ -66,3 +66,19 @@ def actualizar_metrica(usuario_id):
     except Exception as e:
         db.session.rollback()
         return jsonify({"error": str(e)}), 400
+
+@metrica_bp.route("/metricas", methods=["GET"])
+def listar_todas_las_metricas():
+    # Obtener todas las métricas junto con los usuarios asociados
+    metricas = Metrica.query.all()
+    resultado = [{
+        "usuario_id": m.usuario_id,
+        "usuario_nombre": Usuario.query.get(m.usuario_id).nombre,  # Obtener el nombre del usuario
+        "posicion": m.posicion,
+        "edad": m.edad,
+        "altura": m.altura,
+        "peso": m.peso,
+        "velocidad": m.velocidad,
+        "aceleracion": m.aceleracion
+    } for m in metricas]
+    return jsonify(resultado)

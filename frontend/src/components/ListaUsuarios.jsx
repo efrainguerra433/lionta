@@ -1,11 +1,15 @@
 import React, { useEffect, useState, useContext } from "react";
 import { AuthContext } from "../context/AuthContext"; // Importa el contexto
+import EditarUsuario from "./EditarUsuario"; // Asegúrate de importar el componente EditarUsuario
+import { useNavigate } from "react-router-dom"; // Importa el hook useNavigate
 
 const ListaUsuarios = () => {
   const { user } = useContext(AuthContext); // Obtén el usuario actual del contexto
+  const navigate = useNavigate(); // Inicializa el hook useNavigate
   
   const [usuarios, setUsuarios] = useState([]);
   const [error, setError] = useState("");
+  const [usuarioSeleccionado, setUsuarioSeleccionado] = useState(null);
 
   useEffect(() => {
     // Verifica si el usuario tiene el rol de admin
@@ -62,8 +66,7 @@ const ListaUsuarios = () => {
   };
   
   const handleEditar = (usuario) => {
-    // Puedes redirigir a otra ruta con navigate o abrir un modal para editar
-    alert(`Función de editar para: ${usuario.nombre} aún no implementada`);
+    setUsuarioSeleccionado(usuario); // Guarda el usuario seleccionado
   };
   
   if (error) {
@@ -105,12 +108,33 @@ const ListaUsuarios = () => {
                 <td>
                   <button onClick={() => handleEditar(usuario)}>Editar</button>
                   <button onClick={() => handleEliminar(usuario.id)}>Eliminar</button>
+                  <button onClick={() => navigate(`/usuario/${usuario.id}/metricas`)}>Registrar Métrica</button>
                 </td>
             </tr>
           ))}
           </tbody>
         </table>
       )}
+      {usuarioSeleccionado && (
+  <EditarUsuario
+    usuario={usuarioSeleccionado}
+    onClose={() => setUsuarioSeleccionado(null)} // Cierra el formulario
+    onUsuarioActualizado={() => {
+      // Actualiza la lista de usuarios después de editar
+      const fetchUsuarios = async () => {
+        try {
+          const response = await fetch("http://127.0.0.1:5000/usuarios");
+          const data = await response.json();
+          setUsuarios(data);
+        } catch (error) {
+          console.error("Error al actualizar la lista de usuarios:", error);
+        }
+      };
+
+      fetchUsuarios();
+    }}
+  />
+)}
     </div>
   );
 };
