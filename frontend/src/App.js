@@ -9,6 +9,8 @@ import { AuthProvider, AuthContext } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import MetricasUsuario from "./components/MetricasUsuario";
 import ListaMetricas from "./components/ListaMetricas";
+import OlvidasteContrasena from "./components/OlvidasteContrasena";
+import CambiarContrasena from "./components/CambiarContrasena";
 
 function App() {
   return (
@@ -47,6 +49,8 @@ function AppContent() {
         </nav>
 
         <Routes>
+          <Route path="/recuperar-contrasena" element={<OlvidasteContrasena />} />
+          <Route path="/restablecer-contrasena/:token" element={<CambiarContrasena />} />
           <Route 
             path="/registro"
             element={

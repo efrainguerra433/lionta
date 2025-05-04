@@ -32,7 +32,7 @@ const Login = () => {
       });
 
       const data = await response.json();
-
+        
       if (response.ok) {
         localStorage.setItem("token", data.token); // Guarda el token
         localStorage.setItem("isLoggedIn", true); // Guarda el estado de sesión
@@ -88,6 +88,9 @@ const Login = () => {
               />
             </div>
             <button type="submit">Iniciar Sesión</button>
+            <p>
+              <a href="/recuperar-contrasena">¿Olvidaste tu contraseña?</a>
+            </p>
           </form>
         </div>
       )}
