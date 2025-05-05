@@ -1,6 +1,6 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, g
 from app.models import Usuario
-from datetime import date, timedelta
+from datetime import date
 from itsdangerous import URLSafeTimedSerializer
 from flask import current_app
 import smtplib
@@ -13,10 +13,7 @@ usuario_bp = Blueprint("usuario", __name__)
 def login():
     data = request.json
     usuario = Usuario.query.filter_by(email=data["email"]).first()
-    # Añadir verificación de cuenta (opcional pero recomendado)
-    # if usuario and usuario.check_password(data["contraseña"]) and usuario.verificado:
-    if usuario and usuario.check_password(data.get("contraseña")): # Usar .get para evitar KeyError
-        # Considera añadir el token JWT aquí si lo estás usando para la sesión
+    if usuario and usuario.check_password(data["contraseña"]):
         return jsonify({
             "mensaje": "Inicio de sesión exitoso",
             "usuario": {
@@ -26,18 +23,13 @@ def login():
             }
         }), 200
     else:
-        # Mensaje más genérico para no revelar si el email existe o si la cuenta no está verificada
         return jsonify({"error": "Credenciales incorrectas"}), 401
 
 @usuario_bp.route("/registrar_usuario", methods=["POST"])
 def registrar_usuario():
     data = request.json
 
-    # Validar campos obligatorios básicos
-    required_fields_base = ("nombre", "email", "contraseña", "rol")
-    if not all(k in data for k in required_fields_base):
-        return jsonify({"error": "Faltan campos obligatorios (nombre, email, contraseña, rol)"}), 400
-
+    # Validar campos obligatorios
     required_fields = ("nombre", "email", "contraseña", "rol", "documento", "categoria", "fecha_vencimiento_pago")
     if not all(k in data for k in required_fields):
         return jsonify({"error": "Faltan campos obligatorios"}), 400
@@ -54,26 +46,21 @@ def registrar_usuario():
     nuevo_usuario = Usuario(
         nombre=data["nombre"],
         email=data["email"],
-        rol=data["rol"],
-        verificado=False # Inicia como no verificado
+        rol=data["rol"]
     )
     nuevo_usuario.set_password(data["contraseña"])
+    db.session.add(nuevo_usuario)
+    db.session.commit()
 
-    # Asignar campos específicos de jugador si el rol es "jugador"
+    # Crear jugador solo si el rol es "jugador"
     if data["rol"] == "jugador":
-        # Validar campos específicos de jugador
-        required_fields_jugador = ("documento", "categoria", "fecha_vencimiento_pago")
-        if not all(k in data for k in required_fields_jugador):
-            return jsonify({"error": "Faltan campos obligatorios para el rol jugador (documento, categoria, fecha_vencimiento_pago)"}), 400
         nuevo_usuario.documento = data["documento"]
         nuevo_usuario.categoria = data["categoria"]
         nuevo_usuario.estado = True
         nuevo_usuario.fecha_vencimiento_pago = date.fromisoformat(data["fecha_vencimiento_pago"])
-
-    db.session.add(nuevo_usuario)
-    db.session.commit() # Guardar el usuario para obtener el ID si es necesario
+        db.session.commit()
     token = generar_token_verificacion(nuevo_usuario.email)
-    enviar_correo("Verificación de cuenta", nuevo_usuario.email, f"Haz clic en este enlace para verificar tu cuenta y establecer tu contraseña:\n\nhttp://localhost:3000/verificar/{token}")
+    enviar_correo_verificacion(nuevo_usuario.email, token)
     return jsonify({"mensaje": "Usuario y jugador creados correctamente"}), 201
 
 @usuario_bp.route("/jugadores", methods=["GET"])
@@ -121,7 +108,7 @@ def verificar_cuenta(token):
         usuario.verificado = True
         db.session.commit()
         return jsonify({"mensaje": "Cuenta verificada y contraseña actualizada"}), 200
-    except Exception as e: # Captura específica de excepciones de itsdangerous es mejor
+    except Exception:
         return jsonify({"error": "Token inválido o expirado"}), 400
 
 
@@ -146,12 +133,34 @@ def obtener_usuarios():
 
 @usuario_bp.route("/usuario/<int:usuario_id>", methods=["DELETE"])
 def eliminar_usuario(usuario_id):
-    usuario = Usuario.query.get(usuario_id)
-    if not usuario:
-        return jsonify({"error": "Usuario no encontrado"}), 404
-    db.session.delete(usuario)
-    db.session.commit()
-    return jsonify({"mensaje": "Usuario eliminado correctamente"}), 200
+    try:
+        # Buscar el usuario
+        usuario = Usuario.query.get(usuario_id)
+        if not usuario:
+            return jsonify({"error": "Usuario no encontrado"}), 404
+        
+        # Eliminar todas las relaciones en orden correcto
+        # 1. Eliminar estadísticas relacionadas
+        from app.models import Estadistica
+        Estadistica.query.filter_by(usuario_id=usuario_id).delete()
+        
+        # 2. Eliminar métricas relacionadas
+        from app.models import Metrica  # Importa el modelo Metrica si existe
+        Metrica.query.filter_by(usuario_id=usuario_id).delete()
+        
+        # 3. Eliminar cualquier otra relación que pueda existir
+        # Ejemplo: Partidos, Reservas, etc.
+        # PartidosUsuarios.query.filter_by(usuario_id=usuario_id).delete()
+        
+        # Ahora eliminar el usuario
+        db.session.delete(usuario)
+        db.session.commit()
+        
+        return jsonify({"mensaje": "Usuario eliminado correctamente"}), 200
+    except Exception as e:
+        db.session.rollback()  # Deshacer cambios en caso de error
+        print(f"Error al eliminar el usuario: {e}")
+        return jsonify({"error": f"Error al eliminar el usuario: {str(e)}"}), 500
 
 # Actualizar usuario
 @usuario_bp.route("/usuario/<int:usuario_id>", methods=["PUT"])
@@ -176,85 +185,24 @@ def actualizar_usuario(usuario_id):
     return jsonify({"mensaje": "Usuario actualizado correctamente"}), 200
 
 
-# --- Recuperación de Contraseña ---
-
-@usuario_bp.route("/recuperar-contrasena", methods=["POST"])
-def solicitar_recuperacion_contrasena():
-    data = request.get_json()
-    email = data.get('email')
-
-    if not email:
-        return jsonify({"error": "Email es requerido"}), 400
-
-    usuario = Usuario.query.filter_by(email=email).first()
-
-    if usuario:
-        # Generar token específico para reseteo de contraseña
-        token = generar_token_reseteo(usuario.email)
-        reset_url = f"http://localhost:3000/restablecer-contrasena/{token}" 
-        cuerpo = f"Hola {usuario.nombre},\n\nPara restablecer tu contraseña, haz clic en el siguiente enlace:\n{reset_url}\n\nSi no solicitaste esto, ignora este mensaje. El enlace expirará en 1 hora."
-        enviar_correo("Restablecer Contraseña", usuario.email, cuerpo)
-
-    
-    return jsonify({"mensaje": "Si tu email está registrado, recibirás instrucciones para restablecer tu contraseña."}), 200
-
-@usuario_bp.route("/restablecer-contrasena", methods=["POST"])
-def restablecer_contrasena():
-    data = request.get_json()
-    token = data.get('token')
-    nueva_contrasena = data.get('nueva_contrasena')
-
-    if not token or not nueva_contrasena:
-        return jsonify({"error": "Token y nueva contraseña son requeridos"}), 400
-
-    s = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
-    try:
-        email = s.loads(token, salt='password-reset-salt', max_age=3600)
-        usuario = Usuario.query.filter_by(email=email).first()
-
-        if not usuario:
-            return jsonify({"error": "Usuario no encontrado"}), 404
-
-        # Actualizar contraseña
-        usuario.set_password(nueva_contrasena)
-        db.session.commit()
-
-        return jsonify({"mensaje": "Contraseña actualizada correctamente."}), 200
-
-    except Exception as e: # Capturar SignatureExpired, BadTimeSignature específicamente si se desea
-        print(f"Error restableciendo contraseña: {e}") # Log del error
-        return jsonify({"error": "Token inválido o expirado."}), 400
-
-
-# --- Funciones Auxiliares ---
 
 def generar_token_verificacion(email):
     s = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
     return s.dumps(email, salt='verificacion-correo')
 
-def generar_token_reseteo(email):
-    s = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
-    # Usar un 'salt' diferente para tokens de reseteo
-    return s.dumps(email, salt='password-reset-salt')
-
-def enviar_correo(asunto, destinatario, cuerpo):
-    # Reemplaza con tus credenciales y configuración de servidor SMTP
-    # Es MUY recomendable usar variables de entorno para esto
-    remitente_email = "efrain.guerra201008@gmail.com"
-    remitente_pass = "hvoo fbgn vtbt jbal" # ¡Considera usar contraseñas de aplicación si usas Gmail!
-    smtp_server = "smtp.gmail.com"
-    smtp_port = 465 # Para SSL
+def enviar_correo_verificacion(destinatario, token):
+    link = f"http://localhost:3000/verificar/{token}"
+    cuerpo = f"Haz clic en este enlace para verificar tu cuenta:\n\n{link}"
 
     mensaje = MIMEText(cuerpo)
-    mensaje["Subject"] = asunto
-    mensaje["From"] = remitente_email
+    mensaje["Subject"] = "Verificación de cuenta"
+    mensaje["From"] = "efrain.guerra201008@gmail.com"
     mensaje["To"] = destinatario
 
     try:
-        with smtplib.SMTP_SSL(smtp_server, smtp_port) as servidor:
-            servidor.login(remitente_email, remitente_pass)
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as servidor:
+            servidor.login("efrain.guerra201008@gmail.com", "hvoo fbgn vtbt jbal")
             servidor.send_message(mensaje)
-        print(f"Correo '{asunto}' enviado correctamente a {destinatario}")
+        print("Correo enviado correctamente")
     except Exception as e:
-        print(f"Error al enviar correo a {destinatario}: {e}")
-        # Considera cómo manejar este error (e.g., loggear, reintentar)
+        print("Error al enviar el correo:", e)

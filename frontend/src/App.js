@@ -11,6 +11,10 @@ import MetricasUsuario from "./components/MetricasUsuario";
 import ListaMetricas from "./components/ListaMetricas";
 import OlvidasteContrasena from "./components/OlvidasteContrasena";
 import CambiarContrasena from "./components/CambiarContrasena";
+import RegistrarEstadistica from "./components/RegistrarEstadistica";
+import RegistrarMetrica from "./components/RegistrarMetrica";
+import VisualizarEstadisticas from "./components/VisualizarEstadisticas"; // Importar el componente
+import MetricasJugador from "./components/MetricasJugador"; 
 
 function App() {
   return (
@@ -44,6 +48,7 @@ function AppContent() {
             <>
               <button onClick={() => navigate("/registro")}>Crear usuario</button>
               <button onClick={() => navigate("/metricas")}>Ver Métricas</button>
+              <button onClick={() => navigate("/ver-estadisticas")}>Ver Estadísticas</button>
             </>
           )}
         </nav>
@@ -69,12 +74,31 @@ function AppContent() {
               </ProtectedRoute>
             }
           />
-          <Route path="/usuario/:id/metricas" element={<MetricasUsuario usuarioId={1} />} />
+          <Route path="/usuario/:id/metricas" element={<MetricasUsuario />} />
           <Route
             path="/metricas"
             element={
               <ProtectedRoute role="admin">
                 <ListaMetricas />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="/" element={<ListaUsuarios />} />
+          <Route path="/registrar-estadisticas/:usuarioId" element={<RegistrarEstadistica />} />
+          <Route path="/registrar-metricas/:usuarioId" element={<RegistrarMetrica />} />
+          <Route
+            path="/ver-estadisticas"
+            element={
+              <ProtectedRoute role="admin">
+                <VisualizarEstadisticas />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/mis-metricas"
+            element={
+              <ProtectedRoute role="jugador">
+                <MetricasJugador />
               </ProtectedRoute>
             }
           />

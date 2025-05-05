@@ -1,4 +1,5 @@
 from flask import Blueprint, request, jsonify
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.models import Metrica, Usuario
 from app import db
 
@@ -82,3 +83,28 @@ def listar_todas_las_metricas():
         "aceleracion": m.aceleracion
     } for m in metricas]
     return jsonify(resultado)
+
+# Endpoint para que los jugadores visualicen sus métricas
+@metrica_bp.route("/metricas/jugador", methods=["GET"])
+@jwt_required()
+def obtener_metricas_jugador():
+    # Obtener el ID del usuario autenticado desde el token JWT
+    usuario_id = get_jwt_identity()
+
+    # Filtrar las métricas por el usuario autenticado
+    metricas = Metrica.query.filter_by(usuario_id=usuario_id).all()
+    if not metricas:
+        return jsonify({"error": "No hay métricas registradas para este jugador"}), 404
+
+    # Formatear las métricas para la respuesta
+    resultado = [{
+        "id": m.id,
+        "posicion": m.posicion,
+        "edad": m.edad,
+        "altura": m.altura,
+        "peso": m.peso,
+        "velocidad": m.velocidad,
+        "aceleracion": m.aceleracion
+    } for m in metricas]
+
+    return jsonify(resultado), 200

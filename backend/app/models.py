@@ -19,8 +19,10 @@ class Usuario(db.Model):
     verificado = db.Column(db.Boolean, default=False)
     token_verificacion = db.Column(db.String(255), nullable=True)
     # Relaciones
-    metricas = db.relationship('Metrica', backref='usuario_metrica', lazy=True)
-    estadisticas = db.relationship('Estadistica', backref='usuario_estadistica', lazy=True)
+    estadisticas = db.relationship("Estadistica", backref="usuario", 
+                                 cascade="all, delete-orphan")
+    metricas = db.relationship("Metrica", backref="usuario", 
+                             cascade="all, delete-orphan")
 
     def set_password(self, password):
         self.contraseña_hash = generate_password_hash(password)

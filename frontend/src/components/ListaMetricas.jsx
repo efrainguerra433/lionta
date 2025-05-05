@@ -12,7 +12,23 @@ const ListaMetricas = () => {
       const response = await fetch("http://127.0.0.1:5000/metricas");
       if (response.ok) {
         const data = await response.json();
-        setMetricas(data);
+        
+        // Filtrar para mostrar solo la última métrica de cada usuario
+        const usuariosMap = new Map();
+        
+        // Para cada métrica, guarda solo la más reciente por usuario
+        data.forEach(metrica => {
+          const usuarioId = metrica.usuario_id;
+          
+          if (!usuariosMap.has(usuarioId) || 
+              metrica.id > usuariosMap.get(usuarioId).id) {
+            usuariosMap.set(usuarioId, metrica);
+          }
+        });
+        
+        // Convierte el mapa de vuelta a un array
+        const ultimasMetricas = Array.from(usuariosMap.values());
+        setMetricas(ultimasMetricas);
       } else {
         const errorData = await response.json();
         setError(errorData.error || "Error al obtener las métricas");
