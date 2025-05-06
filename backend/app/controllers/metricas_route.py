@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.models import Metrica, Usuario
 from app import db
+from sqlalchemy.sql import func
 
 metrica_bp = Blueprint("metrica", __name__)
 
@@ -69,20 +70,23 @@ def actualizar_metrica(usuario_id):
         return jsonify({"error": str(e)}), 400
 
 @metrica_bp.route("/metricas", methods=["GET"])
-def listar_todas_las_metricas():
-    # Obtener todas las métricas junto con los usuarios asociados
+def obtener_metricas_todos_los_usuarios():
     metricas = Metrica.query.all()
-    resultado = [{
-        "usuario_id": m.usuario_id,
-        "usuario_nombre": Usuario.query.get(m.usuario_id).nombre,  # Obtener el nombre del usuario
-        "posicion": m.posicion,
-        "edad": m.edad,
-        "altura": m.altura,
-        "peso": m.peso,
-        "velocidad": m.velocidad,
-        "aceleracion": m.aceleracion
-    } for m in metricas]
-    return jsonify(resultado)
+    resultado = [
+        {
+            "usuario_id": metrica.usuario_id,
+            "usuario_nombre": Usuario.query.get(metrica.usuario_id).nombre,
+            "id": metrica.id,
+            "posicion": metrica.posicion,
+            "edad": metrica.edad,
+            "altura": metrica.altura,
+            "peso": metrica.peso,
+            "velocidad": metrica.velocidad,
+            "aceleracion": metrica.aceleracion,
+        }
+        for metrica in metricas
+    ]
+    return jsonify(resultado), 200
 
 # Endpoint para que los jugadores visualicen sus métricas
 @metrica_bp.route("/metricas/jugador", methods=["GET"])
@@ -106,5 +110,58 @@ def obtener_metricas_jugador():
         "velocidad": m.velocidad,
         "aceleracion": m.aceleracion
     } for m in metricas]
+
+    return jsonify(resultado), 200
+
+@metrica_bp.route("/ultima-metrica", methods=["GET"])
+def obtener_ultima_metrica():
+    # Obtener la última métrica ordenada por ID
+    ultima_metrica = Metrica.query.order_by(Metrica.id.desc()).first()
+    if not ultima_metrica:
+        return jsonify({"error": "No hay métricas registradas"}), 404
+
+    resultado = {
+        "id": ultima_metrica.id,
+        "usuario_id": ultima_metrica.usuario_id,
+        "usuario_nombre": Usuario.query.get(ultima_metrica.usuario_id).nombre,
+        "posicion": ultima_metrica.posicion,
+        "edad": ultima_metrica.edad,
+        "altura": ultima_metrica.altura,
+        "peso": ultima_metrica.peso,
+        "velocidad": ultima_metrica.velocidad,
+        "aceleracion": ultima_metrica.aceleracion
+    }
+    return jsonify(resultado), 200
+
+@metrica_bp.route("/metricas/recientes", methods=["GET"])
+def obtener_metricas_recientes():
+    # Obtener las métricas más recientes de cada usuario
+    subquery = (
+        Metrica.query
+        .with_entities(Metrica.usuario_id, func.max(Metrica.id).label("max_id"))
+        .group_by(Metrica.usuario_id)
+        .subquery()
+    )
+
+    metricas_recientes = (
+        Metrica.query
+        .join(subquery, Metrica.id == subquery.c.max_id)
+        .all()
+    )
+
+    resultado = [
+        {
+            "usuario_id": metrica.usuario_id,
+            "usuario_nombre": Usuario.query.get(metrica.usuario_id).nombre,
+            "id": metrica.id,
+            "posicion": metrica.posicion,
+            "edad": metrica.edad,
+            "altura": metrica.altura,
+            "peso": metrica.peso,
+            "velocidad": metrica.velocidad,
+            "aceleracion": metrica.aceleracion,
+        }
+        for metrica in metricas_recientes
+    ]
 
     return jsonify(resultado), 200
