@@ -1,7 +1,7 @@
 /* Variables globales */
 :root {
-  --primary-color: #0B1D3A; /* Azul oscuro actualizado */
-  --accent-color: #F97316; /* Naranja actualizado */
+  --primary-color: #0B1D3A; /* Azul oscuro */
+  --accent-color: #F97316; /* Naranja */
   --text-light: #ffffff;
   --text-dark: #333333;
   --bg-light: #f5f7fa;
@@ -15,6 +15,12 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
 }
 
 body {
@@ -231,77 +237,10 @@ body {
   padding: 1.5rem 5%;
   text-align: center;
   font-size: 0.9rem;
-  /* Aseguramos que no haya margin-bottom que cause la barra blanca */
   margin-bottom: 0;
 }
 
-/* Soporte para estilos antiguos para no romper componentes existentes */
-.App-header {
-  background-color: var(--bg-light);
-  min-height: auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: var(--text-dark);
-  padding: 1rem;
-}
-
-.App-link {
-  color: var(--accent-color);
-}
-
-/* Animaciones */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-.page-content {
-  animation: fadeIn 0.5s ease-in-out;
-}
-
-/* Eliminar cualquier margen o padding que pueda causar la barra blanca */
-html, body {
-  margin: 0;
-  padding: 0;
-  overflow-x: hidden;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .main-header {
-    flex-direction: column;
-    padding: 1rem;
-  }
- 
-  .main-nav {
-    width: 100%;
-    margin-top: 1rem;
-  }
- 
-  .main-nav ul {
-    flex-wrap: wrap;
-    justify-content: center;
-  }
- 
-  .main-nav li {
-    margin: 0.5rem;
-  }
- 
-  .user-menu .dropdown-content {
-    position: static;
-    box-shadow: none;
-    width: 100%;
-  }
-}
-
-/* Estilos para listas y tablas */
+/* Tablas globales */
 table {
   width: 100%;
   border-collapse: collapse;
@@ -364,4 +303,89 @@ tr:hover {
 
 .view-btn:hover {
   background-color: #ea580c;
+}
+
+/* Badges comunes */
+.badge {
+  display: inline-block;
+  padding: 0.25rem 0.6rem;
+  border-radius: 50px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.estado-badge {
+  display: inline-block;
+  padding: 0.25rem 0.6rem;
+  border-radius: 50px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.page-content {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+/* Responsive general */
+@media (max-width: 768px) {
+  .main-header {
+    flex-direction: column;
+    padding: 1rem;
+  }
+ 
+  .main-nav {
+    width: 100%;
+    margin-top: 1rem;
+  }
+ 
+  .main-nav ul {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+ 
+  .main-nav li {
+    margin: 0.5rem;
+  }
+ 
+  .user-menu .dropdown-content {
+    position: static;
+    box-shadow: none;
+    width: 100%;
+  }
+
+  .content-container {
+    padding: 1rem;
+  }
+
+  .page-content {
+    padding: 1rem;
+  }
+}
+
+/* Soporte para estilos antiguos */
+.App-header {
+  background-color: var(--bg-light);
+  min-height: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: var(--text-dark);
+  padding: 1rem;
+}
+
+.App-link {
+  color: var(--accent-color);
 }

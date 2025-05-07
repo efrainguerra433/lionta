@@ -1,0 +1,287 @@
+/* Estilos específicos para la página de Horarios */
+.horarios-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+  }
+  
+  .horarios-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  
+  .horarios-header h1 {
+    color: var(--primary-color);
+    font-size: 2.2rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .horarios-header p {
+    color: #666;
+    font-size: 1.1rem;
+  }
+  
+  .horarios-filtros {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+  }
+  
+  .horarios-filtros button {
+    background-color: var(--bg-light);
+    border: 2px solid var(--primary-color);
+    color: var(--primary-color);
+    padding: 0.7rem 1.2rem;
+    border-radius: var(--border-radius);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 0.9rem;
+  }
+  
+  .horarios-filtros button:hover {
+    background-color: rgba(11, 29, 58, 0.1);
+  }
+  
+  .horarios-filtros button.filtro-activo {
+    background-color: var(--primary-color);
+    color: white;
+  }
+  
+  .horarios-info {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 3rem;
+  }
+  
+  .horarios-card {
+    background-color: white;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    padding: 1.5rem;
+    height: 100%;
+  }
+  
+  .horarios-card h3 {
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+    font-size: 1.3rem;
+    text-align: center;
+  }
+  
+  .info-card ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .info-card ul li {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #eee;
+    position: relative;
+    padding-left: 1.5rem;
+  }
+  
+  .info-card ul li:before {
+    content: "✓";
+    color: var(--accent-color);
+    position: absolute;
+    left: 0;
+    font-weight: bold;
+  }
+  
+  .info-card ul li:last-child {
+    border-bottom: none;
+  }
+  
+  .special-note {
+    margin-top: 1.5rem;
+    background-color: rgba(249, 115, 22, 0.15);
+    padding: 1rem;
+    border-radius: 8px;
+    text-align: center;
+  }
+  
+  .special-note p {
+    color: var(--accent-color);
+    font-weight: bold;
+    margin: 0;
+  }
+  
+  .competicion-card {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .torneos-container {
+    display: flex;
+    justify-content: space-around;
+    flex: 1;
+  }
+  
+  .torneo {
+    text-align: center;
+    padding: 1rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .torneo-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  .torneo h4 {
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+  }
+  
+  .torneo p {
+    color: #666;
+    font-size: 0.9rem;
+  }
+  
+  .horarios-tabla-container {
+    background-color: white;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    padding: 2rem;
+    margin-bottom: 3rem;
+  }
+  
+  .horarios-tabla-container h2 {
+    color: var(--primary-color);
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+  
+  .table-responsive {
+    overflow-x: auto;
+  }
+  
+  .horarios-tabla {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .horarios-tabla th {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 0.8rem;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+  
+  .horarios-tabla tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+  
+  .horarios-tabla td {
+    padding: 0.8rem;
+    border-bottom: 1px solid #eee;
+    font-size: 0.9rem;
+  }
+  
+  .instalaciones-section {
+    margin-bottom: 2rem;
+  }
+  
+  .instalaciones-section h2 {
+    color: var(--primary-color);
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+  
+  .instalaciones-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+  }
+  
+  .instalacion-card {
+    background-color: white;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    transition: transform 0.3s;
+  }
+  
+  .instalacion-card:hover {
+    transform: translateY(-5px);
+  }
+  
+  .instalacion-img {
+    height: 180px;
+    background-size: cover;
+    background-position: center;
+  }
+  
+  .instalacion-img.olaya {
+    background-color: #1C2F59;
+  }
+  
+  .instalacion-img.gustavo {
+    background-color: #2A3F69;
+  }
+  
+  .instalacion-img.bosque {
+    background-color: #384F79;
+  }
+  
+  .instalacion-img.gym {
+    background-color: #465F89;
+  }
+  
+  .instalacion-card h3 {
+    color: var(--primary-color);
+    padding: 1rem 1rem 0.5rem;
+    font-size: 1.1rem;
+  }
+  
+  .instalacion-card p {
+    color: #666;
+    padding: 0 1rem 1rem;
+    font-size: 0.9rem;
+  }
+  
+  /* Responsive específico para horarios */
+  @media (max-width: 1024px) {
+    .instalaciones-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .horarios-info {
+      grid-template-columns: 1fr;
+    }
+    
+    .horarios-filtros button {
+      padding: 0.6rem 1rem;
+      font-size: 0.85rem;
+    }
+    
+    .horarios-tabla th,
+    .horarios-tabla td {
+      padding: 0.6rem;
+      font-size: 0.85rem;
+    }
+  }
+  
+  @media (max-width: 576px) {
+    .instalaciones-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .horarios-filtros {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0.5rem;
+    }
+  }
