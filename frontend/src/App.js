@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Link, useNavigate, useLocation, Navigate } from "react-router-dom";
 import RegistroUsuario from "./components/RegistroUsuario";
 import Login from "./components/Login";
 import ListaUsuarios from "./components/ListaUsuarios";
@@ -13,8 +13,9 @@ import OlvidasteContrasena from "./components/OlvidasteContrasena";
 import CambiarContrasena from "./components/CambiarContrasena";
 import RegistrarEstadistica from "./components/RegistrarEstadistica";
 import RegistrarMetrica from "./components/RegistrarMetrica";
-import VisualizarEstadisticas from "./components/VisualizarEstadisticas"; // Importar el componente
+import VisualizarEstadisticas from "./components/VisualizarEstadisticas";
 import MetricasJugador from "./components/MetricasJugador"; 
+import HomePage from "./components/HomePage";
 
 function App() {
   return (
@@ -26,33 +27,67 @@ function App() {
   );
 }
 
-// Nuevo componente separado para poder usar hooks como useContext y useNavigate
+// Componente separado para poder usar hooks como useContext y useNavigate
 function AppContent() {
-  const { user } = useContext(AuthContext);
+  const { user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
+  const location = useLocation();
+  
+  // Determinar si estamos en la página principal para mostrar un diseño diferente
+  const isHomePage = location.pathname === "/";
+  
+  // Si estamos en la página de inicio, mostramos el diseño especial de HomePage
+  if (isHomePage) {
+    return (
+      <div className="App">
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+        </Routes>
+      </div>
+    );
+  }
 
+  // Para las demás rutas, mostramos la estructura de navegación normal
   return (
     <div className="App">
-      <header className="App-header">
-        <h1>Bienvenido a Lionta</h1>
-        <nav>
-          <Link to="/login">
-            <button>Login</button>
-          </Link>
-          <Link to="/usuarios">
-            <button>Lista de Usuarios</button>
-          </Link>
-
-          {/* Botón extra solo visible para admin */}
-          {user?.rol === "admin" && (
-            <>
-              <button onClick={() => navigate("/registro")}>Crear usuario</button>
-              <button onClick={() => navigate("/metricas")}>Ver Métricas</button>
-              <button onClick={() => navigate("/ver-estadisticas")}>Ver Estadísticas</button>
-            </>
-          )}
+      <header className="main-header">
+        <div className="logo">Lionta F.C.</div>
+        <nav className="main-nav">
+          <ul>
+            <li><Link to="/">Inicio</Link></li>
+            <li><Link to="/programas">Programas</Link></li>
+            <li><Link to="/horarios">Horarios</Link></li>
+            <li><Link to="/contacto">Contacto</Link></li>
+            {user ? (
+              <>
+                <li className="user-menu">
+                  <span>{user.nombre || user.email}</span>
+                  <div className="dropdown-content">
+                    {user?.rol === "admin" && (
+                      <>
+                        <Link to="/registro">Crear usuario</Link>
+                        <Link to="/usuarios">Lista de Usuarios</Link>
+                        <Link to="/metricas">Ver Métricas</Link>
+                        <Link to="/ver-estadisticas">Ver Estadísticas</Link>
+                      </>
+                    )}
+                    {user?.rol === "jugador" && (
+                      <>
+                        <Link to="/mis-metricas">Mis Métricas</Link>
+                      </>
+                    )}
+                    <button onClick={logout} className="logout-btn">Cerrar sesión</button>
+                  </div>
+                </li>
+              </>
+            ) : (
+              <li><Link to="/" className="login-btn">Iniciar sesión</Link></li>
+            )}
+          </ul>
         </nav>
+      </header>
 
+      <main className="content-container">
         <Routes>
           <Route path="/recuperar-contrasena" element={<OlvidasteContrasena />} />
           <Route path="/restablecer-contrasena/:token" element={<CambiarContrasena />} />
@@ -65,7 +100,13 @@ function AppContent() {
             }
           />
           <Route path="/verificar/:token" element={<VerificarCuenta />} />
-          <Route path="/login" element={<Login />} />
+          <Route path="/login" element={
+            user ? (
+              <Navigate to={user.rol === 'admin' ? '/usuarios' : '/mis-metricas'} replace />
+            ) : (
+              <Login />
+            )
+          } />
           <Route
             path="/usuarios"
             element={
@@ -83,7 +124,6 @@ function AppContent() {
               </ProtectedRoute>
             }
           />
-          <Route path="/" element={<ListaUsuarios />} />
           <Route path="/registrar-estadisticas/:usuarioId" element={<RegistrarEstadistica />} />
           <Route path="/registrar-metricas/:usuarioId" element={<RegistrarMetrica />} />
           <Route
@@ -102,8 +142,16 @@ function AppContent() {
               </ProtectedRoute>
             }
           />
+          {/* Rutas adicionales para las nuevas secciones */}
+          <Route path="/programas" element={<div className="page-content"><h1>Programas</h1><p>Información sobre nuestros programas de entrenamiento.</p></div>} />
+          <Route path="/horarios" element={<div className="page-content"><h1>Horarios</h1><p>Horarios de entrenamiento y partidos.</p></div>} />
+          <Route path="/contacto" element={<div className="page-content"><h1>Contacto</h1><p>Información de contacto del club.</p></div>} />
         </Routes>
-      </header>
+      </main>
+      
+      <footer className="main-footer">
+        <p>&copy; {new Date().getFullYear()} Lionta F.C. Todos los derechos reservados.</p>
+      </footer>
     </div>
   );
 }

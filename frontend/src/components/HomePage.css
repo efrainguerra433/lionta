@@ -1,0 +1,427 @@
+/* Estilos específicos para la página de inicio */
+.home-page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Encabezado con degradado más oscuro */
+.home-header {
+    background: linear-gradient(180deg, #0B1D3A 0%, #1C2F59 100%);
+    color: var(--text-light);
+    padding: 0.8rem 5%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    z-index: 10;
+}
+
+.home-header .logo {
+    font-size: 1.6rem;
+    font-weight: bold;
+}
+
+.home-header .main-nav ul {
+    display: flex;
+    list-style-type: none;
+}
+
+.home-header .main-nav li {
+    margin-left: 1.5rem;
+}
+
+.home-header .main-nav a {
+    color: var(--text-light);
+    text-decoration: none;
+    font-weight: 500;
+    transition: opacity 0.3s;
+    font-size: 0.9rem;
+    letter-spacing: 0.5px;
+}
+
+.home-header .main-nav a:hover {
+    opacity: 0.8;
+    color: var(--accent-color);
+}
+
+/* Sección Hero con fondo degradado actualizado */
+.hero-section {
+    flex: 1;
+    background: linear-gradient(135deg, #0B1D3A 0%, #1C2F59 100%);
+    padding: 2rem 0 6rem 0; /* Añadimos padding inferior para dejar espacio a las características */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 550px; /* Altura más controlada */
+    position: relative;
+}
+
+.hero-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start; /* Cambiado de center a flex-start */
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 5%;
+    width: 100%;
+}
+
+/* Sección de texto principal - más compacta */
+.hero-text {
+    flex: 1.5;
+    color: white;
+    padding-right: 1.5rem;
+    margin-top: 1rem;
+}
+
+.hero-text h1 {
+    font-size: 2.8rem; /* Reducido de 3.2rem */
+    margin-bottom: 1rem;
+    color: white;
+    font-weight: 700;
+    line-height: 1.3;
+    letter-spacing: 0.5px;
+}
+
+.hero-text p {
+    font-size: 1.1rem; /* Reducido de 1.25rem */
+    margin-bottom: 1.8rem;
+    color: rgba(255, 255, 255, 0.95);
+    line-height: 1.5;
+    max-width: 90%;
+}
+
+.hero-buttons {
+    display: flex;
+    gap: 1rem;
+}
+
+.btn {
+    padding: 0.8rem 1.5rem; /* Reducido de 1rem 1.8rem */
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem; /* Reducido de 1.1rem */
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-primary {
+    background-color: #F97316;
+    color: var(--text-light);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.btn-primary:hover {
+    background-color: #EA580C;
+    transform: translateY(-2px);
+}
+
+.btn-outline {
+    background-color: transparent;
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    color: white;
+    border-radius: 10px;
+}
+
+.btn-outline:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+}
+
+/* Tarjeta de inicio de sesión - más compacta */
+.login-card {
+    flex: 0;
+    width: 280px; /* Más estrecho */
+    max-width: 280px; /* Limitamos el ancho máximo */
+    background-color: var(--card-bg);
+    border-radius: 14px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    padding: 1.5rem; /* Reducido de 2rem */
+    padding-left: 20px;
+    transform: translateY(0);
+    transition: transform 0.3s;
+    margin-right: auto;
+}
+
+.login-card:hover {
+    transform: translateY(-5px);
+}
+
+.login-form-container h2 {
+    margin-bottom: 1.2rem; /* Reducido de 1.5rem */
+    color: var(--primary-color);
+    text-align: left;
+    font-size: 1.3rem; /* Reducido de 1.4rem */
+    font-weight: 700;
+}
+
+.error-message {
+    background-color: #ffebee;
+    color: #c62828;
+    padding: 0.6rem; /* Reducido de 0.75rem */
+    border-radius: 8px;
+    margin-bottom: 0.8rem; /* Reducido de 1rem */
+    font-size: 0.9rem;
+    text-align: left;
+}
+
+/* Formulario de login más compacto */
+.login-form .form-group {
+    margin-bottom: 1rem; /* Reducido de 1.2rem */
+}
+
+.login-form .form-group label {
+    display: block;
+    margin-bottom: 0.3rem; /* Reducido de 0.5rem */
+    font-weight: 500;
+    font-size: 0.85rem; /* Reducido de 0.9rem */
+    color: var(--text-dark);
+    text-align: left;
+}
+
+.login-form .form-group input {
+    width: 100%;
+    padding: 0.7rem; /* Reducido de 0.8rem */
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 0.9rem; /* Reducido de 1rem */
+    transition: all 0.3s;
+}
+
+.login-form .form-group input:focus {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.2);
+    outline: none;
+}
+
+.form-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    font-size: 0.8rem; /* Reducido de 0.85rem */
+}
+
+.remember-me {
+    display: flex;
+    align-items: center;
+}
+
+.remember-me input {
+    margin-right: 0.4rem;
+}
+
+.forgot-password {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s;
+}
+
+.forgot-password:hover {
+    color: var(--accent-color);
+    text-decoration: underline;
+}
+
+.btn-login {
+    width: 100%;
+    background-color: var(--accent-color);
+    color: white;
+    padding: 0.7rem; /* Reducido de 0.8rem */
+    border-radius: 8px;
+    font-weight: 600;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.btn-login:hover {
+    background-color: #EA580C;
+    transform: translateY(-2px);
+}
+
+/* Panel de bienvenida para usuarios ya logueados */
+.welcome-panel {
+    flex: 1;
+    background-color: rgba(255, 255, 255, 0.95);
+    border-radius: 14px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    padding: 1.8rem;
+    transform: translateY(0);
+    transition: transform 0.3s;
+    color: var(--text-dark);
+    max-width: 450px;
+}
+
+.welcome-panel:hover {
+    transform: translateY(-5px);
+}
+
+.welcome-panel h2 {
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+}
+
+.welcome-panel p {
+    margin-bottom: 1.5rem;
+    color: var(--text-dark);
+}
+
+.admin-quick-links {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.admin-quick-links .btn {
+    text-decoration: none;
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+.admin-quick-links .btn-outline {
+    border: 2px solid var(--primary-color);
+    color: var(--primary-color);
+}
+
+.admin-quick-links .btn-outline:hover {
+    background-color: rgba(11, 29, 58, 0.1);
+}
+
+/* Características en la parte inferior de la sección hero */
+.hero-features {
+    display: flex;
+    justify-content: space-between;
+    max-width: 1200px;
+    width: 100%;
+    margin: 3rem auto 0;
+    padding: 0 5%;
+    gap: 2rem;
+}
+
+.hero-feature {
+    background-color: rgba(255, 255, 255, 0.95);
+    border-radius: 12px;
+    padding: 1.5rem;
+    flex: 1;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    transition: transform 0.3s;
+}
+
+.hero-feature:hover {
+    transform: translateY(-5px);
+}
+
+.hero-feature h3 {
+    color: var(--primary-color);
+    margin-bottom: 0.8rem;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.hero-feature p {
+    color: var(--text-dark);
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+/* Footer para la página de inicio */
+.home-footer {
+    background-color: #0B1D3A;
+    color: rgba(255, 255, 255, 0.8);
+    padding: 1.2rem 5%;
+    text-align: center;
+    font-size: 0.85rem;
+}
+
+/* Responsive para página de inicio */
+@media (max-width: 992px) {
+    .hero-content {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .hero-text {
+        text-align: center;
+        padding-right: 0;
+    }
+    
+    .hero-text p {
+        max-width: 100%;
+    }
+    
+    .login-card {
+        width: 100%;
+        max-width: 350px;
+        margin: 0 auto;
+    }
+    
+    .welcome-panel {
+        width: 100%;
+        max-width: 450px;
+        margin: 0 auto;
+    }
+    
+    .hero-features {
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+    
+    .hero-buttons {
+        justify-content: center;
+    }
+}
+
+@media (max-width: 768px) {
+    .home-header {
+        flex-direction: column;
+        padding: 1rem;
+    }
+    
+    .home-header .logo {
+        margin-bottom: 1rem;
+    }
+    
+    .home-header .main-nav ul {
+        justify-content: center;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .home-header .main-nav li {
+        margin: 0 0.7rem;
+    }
+    
+    .hero-text h1 {
+        font-size: 2.2rem;
+    }
+    
+    .hero-text p {
+        font-size: 1rem;
+    }
+    
+    .admin-quick-links {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-text h1 {
+        font-size: 1.8rem;
+    }
+    
+    .hero-buttons {
+        flex-direction: column;
+    }
+    
+    .btn {
+        width: 100%;
+    }
+    
+    .login-card {
+        padding: 1.2rem;
+    }
+}

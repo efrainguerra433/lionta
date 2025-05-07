@@ -2,6 +2,9 @@ import os
 
 DB_USER = "johne" 
 DB_PASSWORD = "orange"
+DB_USER = "rutr5" 
+DB_PASSWORD = "Diesciciete17!"
+
 DB_HOST = "localhost"  
 DB_NAME = "lionta_db"
 
