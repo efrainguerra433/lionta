@@ -21,20 +21,19 @@ import time
 import json
 import paho.mqtt.client as mqtt
 
-# Configura el puerto UART (ajusta el nombre según tu caso, ejemplo: '/dev/ttyUSB0' o '/dev/serial0')
+
 UART_PORT = '/dev/serial0'
 BAUD_RATE = 9600
 
-# MQTT
+
 MQTT_BROKER = "localhost"
 MQTT_PORT = 1883
 MQTT_TOPIC = "sensores/aire"
 
-# Inicializar UART
 ser = serial.Serial(UART_PORT, BAUD_RATE, timeout=1)
 time.sleep(2)  # Espera para estabilizar la conexión UART
 
-# Inicializar cliente MQTT
+
 client = mqtt.Client()
 client.connect(MQTT_BROKER, MQTT_PORT, 60)
 
