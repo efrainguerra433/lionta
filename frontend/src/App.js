@@ -1,21 +1,21 @@
 import React, { useContext } from "react";
 import { BrowserRouter as Router, Routes, Route, Link, useNavigate, useLocation, Navigate } from "react-router-dom";
 import RegistroUsuario from "./components/RegistroUsuario";
-import Login from "./components/Login";
-import ListaUsuarios from "./components/ListaUsuarios";
-import VerificarCuenta from "./components/VerificarCuenta";
+import Login from "./pages/Login";
+import ListaUsuarios from "./pages/ListaUsuarios";
+import VerificarCuenta from "./pages/VerificarCuenta";
 import './App.css';
 import { AuthProvider, AuthContext } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
-import MetricasUsuario from "./components/MetricasUsuario";
-import ListaMetricas from "./components/ListaMetricas";
-import OlvidasteContrasena from "./components/OlvidasteContrasena";
-import CambiarContrasena from "./components/CambiarContrasena";
-import RegistrarEstadistica from "./components/RegistrarEstadistica";
-import RegistrarMetrica from "./components/RegistrarMetrica";
-import VisualizarEstadisticas from "./components/VisualizarEstadisticas";
-import MetricasJugador from "./components/MetricasJugador"; 
-import HomePage from "./components/HomePage";
+import MetricasUsuario from "./pages/MetricasUsuario";
+import ListaMetricas from "./pages/ListaMetricas";
+import OlvidasteContrasena from "./pages/OlvidasteContrasena";
+import CambiarContrasena from "./pages/CambiarContrasena";
+import RegistrarEstadistica from "./pages/RegistrarEstadistica";
+import RegistrarMetrica from "./pages/RegistrarMetrica";
+import VisualizarEstadisticas from "./pages/VisualizarEstadisticas";
+import MetricasJugador from "./pages/MetricasJugador"; 
+import HomePage from "./pages/HomePage";
 
 function App() {
   return (

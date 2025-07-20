@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from app.models import Metrica, Usuario
+from app.models.metrica import Metrica 
+from app.models.usuario import Usuario
 from app import db
 from sqlalchemy.sql import func
 

@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from app.models import Estadistica, Usuario
+from backend.app.models import Estadistica, Usuario
 from app import db
 
 estadistica_bp = Blueprint("estadistica", __name__)

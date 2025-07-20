@@ -18,7 +18,7 @@ def create_app():
     CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}}, supports_credentials=True)
 
     # Importa los modelos DESPUÉS de inicializar db
-    from app.models import Usuario
+    from app.models.usuario import Usuario
 
     # Crea el admin si no existe
     with app.app_context():
@@ -34,15 +34,9 @@ def create_app():
             db.session.commit()
 
     # Importa y registra los blueprints
-    
-    from app.controllers.metricas_route import metrica_bp
-    from app.controllers.estadisticas_route import estadistica_bp
-    from app.controllers.usuarios_route import usuario_bp
-
-    
-    app.register_blueprint(metrica_bp)
-    app.register_blueprint(estadistica_bp)
-    app.register_blueprint(usuario_bp)
+    from app.controllers import blueprints
+    for blueprint in blueprints:
+        app.register_blueprint(blueprint)
 
     return app
 

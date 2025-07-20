@@ -1,0 +1,246 @@
+/* Estilos específicos para la página de Lista de Usuarios */
+.usuarios-container {
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 0.5rem;
+    background-color: var(--card-bg);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  
+  .usuarios-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  
+  .usuarios-header h2 {
+    color: var(--primary-color);
+    font-size: 1.8rem;
+    margin: 0;
+  }
+  
+  /* Estilos para los filtros */
+  .filtros-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    background-color: #f5f7fa;
+    padding: 1rem;
+    border-radius: var(--border-radius);
+  }
+  
+  .filtro-busqueda input {
+    width: 100%;
+    padding: 0.7rem;
+    border: 1px solid #ddd;
+    border-radius: var(--border-radius);
+    font-size: 1rem;
+  }
+  
+  .filtros-selectores {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  
+  .filtros-selectores select {
+    padding: 0.7rem;
+    border: 1px solid #ddd;
+    border-radius: var(--border-radius);
+    background-color: white;
+    flex-grow: 1;
+    min-width: 150px;
+  }
+  
+  /* Estilos específicos para la tabla de usuarios */
+  .tabla-container {
+    overflow-x: auto;
+    margin-bottom: 1.5rem;
+  }
+  
+  .tabla-usuarios {
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-bottom: 0;
+  }
+  
+  .tabla-usuarios th:first-child {
+    border-top-left-radius: var(--border-radius);
+  }
+  
+  .tabla-usuarios th:last-child {
+    border-top-right-radius: var(--border-radius);
+  }
+  
+  .tabla-usuarios tr:last-child td:first-child {
+    border-bottom-left-radius: var(--border-radius);
+  }
+  
+  .tabla-usuarios tr:last-child td:last-child {
+    border-bottom-right-radius: var(--border-radius);
+  }
+  
+  /* Estilo para usuarios inactivos */
+  .usuario-inactivo {
+    background-color: #f9f9f9;
+    color: #777;
+  }
+  
+  /* Badges específicos para roles */
+  .badge-admin {
+    background-color: #4527a0;
+    color: white;
+  }
+  
+  .badge-jugador {
+    background-color: #1976d2;
+    color: white;
+  }
+  
+  .badge-entrenador {
+    background-color: #388e3c;
+    color: white;
+  }
+  
+  /* Estados específicos */
+  .estado-badge.activo {
+    background-color: #c8e6c9;
+    color: #2e7d32;
+  }
+  
+  .estado-badge.inactivo {
+    background-color: #ffcdd2;
+    color: #c62828;
+  }
+  
+  /* Estilos para las acciones */
+  .acciones {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+  
+  /* Modal de edición */
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  
+  .modal-container {
+    background-color: white;
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    width: 90%;
+    max-width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    animation: fadeIn 0.3s;
+  }
+  
+  /* Estilos para mensajes de error y sin resultados */
+  .error-container, .loading-indicator, .no-results {
+    padding: 2rem;
+    text-align: center;
+    background-color: #f9f9f9;
+    border-radius: var(--border-radius);
+    margin: 1rem 0;
+  }
+  
+  .error-message {
+    color: #c62828;
+  }
+  
+  .loading-indicator {
+    color: var(--primary-color);
+  }
+  
+  .no-results {
+    color: #555;
+  }
+  
+  /* Responsive específico para ListaUsuarios */
+  @media (max-width: 992px) {
+    .tabla-usuarios th,
+    .tabla-usuarios td {
+      padding: 0.7rem 0.5rem;
+      font-size: 0.9rem;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .usuarios-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+    
+    .filtros-selectores {
+      flex-direction: column;
+    }
+    
+    .filtros-selectores select,
+    .filtros-selectores .btn-outline {
+      width: 100%;
+    }
+    
+    /* Tabla responsive específica */
+    .tabla-usuarios {
+      display: block;
+    }
+    
+    .tabla-usuarios thead {
+      display: none;
+    }
+    
+    .tabla-usuarios tbody {
+      display: block;
+    }
+    
+    .tabla-usuarios tr {
+      display: block;
+      margin-bottom: 1rem;
+      border: 1px solid #ddd;
+      border-radius: var(--border-radius);
+      padding: 0.5rem;
+    }
+    
+    .tabla-usuarios td {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.5rem;
+      text-align: right;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .tabla-usuarios td:before {
+      content: attr(data-label);
+      float: left;
+      font-weight: bold;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+    }
+    
+    .tabla-usuarios td:last-child {
+      border-bottom: none;
+    }
+    
+    .acciones {
+      justify-content: flex-end;
+    }
+  }

@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from app.models import Usuario
+from app.models.usuario import Usuario
 from datetime import date, timedelta
 from itsdangerous import URLSafeTimedSerializer
 from flask import current_app
