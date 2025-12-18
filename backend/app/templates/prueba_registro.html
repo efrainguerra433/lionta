@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Registro de Usuario</title>
+</head>
+<body>
+  <h2>Registro de Usuario</h2>
+
+  <form id="registro-form">
+    <label>Nombre:</label><br>
+    <input type="text" id="nombre" required><br><br>
+
+    <label>Email:</label><br>
+    <input type="email" id="email" required><br><br>
+
+    <label>Contraseña:</label><br>
+    <input type="password" id="contraseña" required><br><br>
+
+    <label>Rol:</label><br>
+    <select id="rol">
+      <option value="jugador">Jugador</option>
+      <option value="admin">Administrador</option>
+    </select><br><br>
+
+    <button type="submit">Registrar</button>
+  </form>
+
+  <p id="mensaje"></p>
+
+  <script>
+    document.getElementById("registro-form").addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      const nombre = document.getElementById("nombre").value;
+      const email = document.getElementById("email").value;
+      const contraseña = document.getElementById("contraseña").value;
+      const rol = document.getElementById("rol").value;
+
+      const respuesta = await fetch("/registrar_usuario", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ nombre, email, contraseña, rol })
+      });
+
+      const resultado = await respuesta.json();
+      const mensaje = document.getElementById("mensaje");
+
+      if (respuesta.ok) {
+        mensaje.textContent = resultado.mensaje;
+        mensaje.style.color = "green";
+      } else {
+        mensaje.textContent = resultado.error;
+        mensaje.style.color = "red";
+      }
+    });
+  </script>
+</body>
+</html>

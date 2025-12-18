@@ -1,27 +1,45 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from config import SQLALCHEMY_DATABASE_URI, SQLALCHEMY_TRACK_MODIFICATIONS
 from flask_cors import CORS
-from flask_migrate import Migrate 
+from flask_migrate import Migrate
+from config import SQLALCHEMY_DATABASE_URI, SQLALCHEMY_TRACK_MODIFICATIONS, SECRET_KEY
+
 db = SQLAlchemy()
 migrate = Migrate()
+
 def create_app():
+    
     app = Flask(__name__)
     app.config["SQLALCHEMY_DATABASE_URI"] = SQLALCHEMY_DATABASE_URI
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = SQLALCHEMY_TRACK_MODIFICATIONS
-
+    app.config["SECRET_KEY"] = SECRET_KEY
     db.init_app(app)
     migrate.init_app(app, db)
-    CORS(app)
-    from app.routes import main
-    app.register_blueprint(main)
+    CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}}, supports_credentials=True)
 
-    # Esto asegura que se creen las tablas dentro del contexto de la app
+    # Importa los modelos DESPUÉS de inicializar db
+    from app.models.usuario import Usuario
+
+    # Crea el admin si no existe
     with app.app_context():
-        from app import models
         db.create_all()
+        if not Usuario.query.filter_by(email="admin@lionta.com").first():
+            admin = Usuario(
+                nombre="Administrador General",
+                email="admin@lionta.com",
+                rol="admin"
+            )
+            admin.set_password("admin123")
+            db.session.add(admin)
+            db.session.commit()
+
+    # Importa y registra los blueprints
+    from app.controllers import blueprints
+    for blueprint in blueprints:
+        app.register_blueprint(blueprint)
 
     return app
+
 
 
 
